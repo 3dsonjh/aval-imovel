@@ -16,15 +16,19 @@ import { collection, getDocs } from 'firebase/firestore';
 
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete'
+
+import Confirmar from './Confirmar';
 
 //conexao com o banco de dados
 const db = getFirestore(app);
 
 export default function Listar(){
 
-
-    const [imoveis, setImoveis] = useState([]);
+    const [imoveis,     setImoveis  ] = useState([]);
+    const [dialogo,     setDialogo  ] = useState(false);
+    const [confirmar,   setConfirmar] = useState();
 
     useEffect(() => {
 
@@ -48,6 +52,11 @@ export default function Listar(){
         
     },[imoveis]);
 
+    function deletar()
+    {
+        setDialogo(true);
+    }
+
     /*async function carregar(){
     
     }
@@ -69,6 +78,18 @@ export default function Listar(){
                    
                   }}
                 >
+
+                <Confirmar
+                    abrir={dialogo}
+                    texto="Deseja Realmente Deletar o Imóvel "
+                    botao_sim="Confirmar"
+                    botao_nao="Desistir"
+                    titulo="Deletar Imóvel"
+                    modificador={setDialogo}
+                    retorno={setConfirmar}
+                />
+                
+
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -76,6 +97,7 @@ export default function Listar(){
                             <TableCell>Endereço</TableCell>
                             <TableCell>Valor</TableCell>
                             <TableCell>Data de Cadastro</TableCell>
+                            <TableCell>Ações</TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -87,6 +109,9 @@ export default function Listar(){
                                 <TableCell>{imo.endereco}</TableCell>
                                 <TableCell>{imo.valor_avaliado.toLocaleString("pt-BR",{style: "currency", currency:"BRL"})}</TableCell>
                                 <TableCell>{imo.data_cadastro.toDate().toLocaleString()}</TableCell>
+                                <TableCell>
+                                    <IconButton onClick={deletar}><DeleteIcon /></IconButton>
+                                </TableCell>
                             </TableRow>
                         )
                         })
