@@ -13,37 +13,32 @@ import { app } from "../firebase";
 
 import {getFirestore} from "firebase/firestore";
 import { collection, getDocs } from 'firebase/firestore';
+import { doc, deleteDoc } from "firebase/firestore";
 
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Button, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+
 
 import Confirmar from './Confirmar';
+import { EditLocation } from '@mui/icons-material';
 
 //conexao com o banco de dados
 const db = getFirestore(app);
 
 export default function Listar(){
 
-    const [imoveis,     setImoveis  ] = useState([]);
-    const [dialogo,     setDialogo  ] = useState(false);
-    const [confirmar,   setConfirmar] = useState();
+    const [imoveis, setImoveis] = useState([]);
+    const [dialogo, setDialogo] = useState(false);
+    const [confirmar, setConfirmar] = useState();
+    const [idSelecionado, setIdSelecionado] = useState();
 
     useEffect(() => {
 
         let ignore = false;
 
-        async function carregar(){
-            const resultado = await getDocs(collection(db,"imoveis"));
-            const novo = resultado.docs.map(function(item){
-                return item.data();
-            });
-            if(imoveis.length == 0){
-                setImoveis(novo);
-                console.log(novo);
-            }
-        }
         carregar();
         
         return () => {
@@ -52,9 +47,37 @@ export default function Listar(){
         
     },[imoveis]);
 
-    function deletar()
-    {
+    async function carregar(){
+        const resultado = await getDocs(collection(db,"imoveis"));
+        const novo = resultado.docs.map(function(item){
+
+            let retorno = item.data();
+            retorno.id = item.id;
+            return retorno;
+
+        });
+        if(imoveis.length == 0){
+            setImoveis(novo);
+            console.log(novo);
+        }
+    }
+
+    function deletar(id){
+        setConfirmar(null);
+        setIdSelecionado(id);
         setDialogo(true);
+        console.log(confirmar);
+    }
+
+    async function removerFirebase(id){
+        await deleteDoc(doc(db, "imoveis", id));
+        setImoveis([]);
+        setConfirmar(null);
+        carregar();
+    }
+
+    if(confirmar==true){
+        removerFirebase(idSelecionado);
     }
 
     /*async function carregar(){
@@ -110,7 +133,8 @@ export default function Listar(){
                                 <TableCell>{imo.valor_avaliado.toLocaleString("pt-BR",{style: "currency", currency:"BRL"})}</TableCell>
                                 <TableCell>{imo.data_cadastro.toDate().toLocaleString()}</TableCell>
                                 <TableCell>
-                                    <IconButton onClick={deletar}><DeleteIcon /></IconButton>
+                                    <IconButton onClick={()=>{deletar(imo.id)}}><DeleteIcon /></IconButton>
+                                    <IconButton href="/imoveis/editar/abc123"><EditIcon /></IconButton>
                                 </TableCell>
                             </TableRow>
                         )

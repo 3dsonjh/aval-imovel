@@ -29,20 +29,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-const paginas = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  },
-  {
-    path: "/imoveis",
-    element: <ListarImovel />
-  },
-  {
-    path: "/imoveis/cadastro",
-    element: <Cadastro />
-  }
-]);
+import paginas from './rotas';
+
+
 
 function DashboardContent(attr) {
   const [open, setOpen] = React.useState(true);
