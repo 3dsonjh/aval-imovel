@@ -24,6 +24,8 @@ import ListarImovel from './imovel/Listar';
 
 import ReactDom from 'react-dom/client';
 
+import Login from './Login';
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -124,12 +126,12 @@ function DashboardContent(attr) {
 
 export default function Dashboard() {
 
-    // router
-    if (window.location.pathname == '/listar')
-    {
-        return <DashboardContent pagina={ <ListarImovel /> } />;
-    } else {
-        return <DashboardContent pagina={ <Home /> } />;
+    const [logado, setLogado] = React.useState(false);
+
+    if(logado==false){
+      return <DashboardContent />;
+    }else{
+      return <Login />
     }
   
 }
