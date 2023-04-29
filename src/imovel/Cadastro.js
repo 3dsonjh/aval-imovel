@@ -1,20 +1,25 @@
 import { Box, Grid, Button, MenuItem, Paper, TextField, CircularProgress } from "@mui/material";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 
 import { app } from "../firebase";
+import { getStorage } from "firebase/storage";
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { redirect } from "react-router-dom";
 
 //conexao com o banco de dados
 const db = getFirestore(app);
+//criacao referencia
+const storage = getStorage(app);
 
 
 export default function Cadastro()
 {
     const [carregando,setCarregando] = useState(false);
     const [novoImovel,setNovoImovel] = useState({});
+
+    const inputUpload = useRef();
 
     async function cadastrar(evento){
         evento.preventDefault();
@@ -42,6 +47,10 @@ export default function Cadastro()
         setNovoImovel(novoImovel);
 
         console.log(novoImovel);
+    }
+
+    function upload(){
+        console.log(inputUpload);
     }
 
     return (
@@ -73,6 +82,9 @@ export default function Cadastro()
                         <TextField onChange={alteraImovel} label="Valor do Imóvel" margin="normal" name="valor_avaliado"></TextField>
                         <TextField onChange={alteraImovel} label="Geolocalização" margin="normal" name="geoloc"></TextField>
                         <TextField onChange={alteraImovel} label="Extras" margin="normal" name="extras"></TextField>
+                        <TextField type="file" label="Foto" ref={inputUpload}></TextField>
+
+                        <Button onClick={upload}>Upload</Button>
 
                         {(carregando==true)?
                         <Button disabled type="submit" variant="contained">Carregando...  <CircularProgress /></Button>
